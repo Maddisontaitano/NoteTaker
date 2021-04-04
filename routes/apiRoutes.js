@@ -1,3 +1,8 @@
+const db = require("../db/db.json");
+const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
+
+
 //dependencies
 
 
@@ -17,33 +22,28 @@ module.exports = function(app) {
       res.json(index);
     });
 
-    app.use(express.static("public"));
+      app.get("/api/notes", function(req, res) {
+        res.json(db);
+      });
+
 
 // posts the new note
-app.post("/api/notes", function(req, res) {
-
-  let noteId = uuid();
-  let newNote = {
-    id: noteId,
-    title: req.body.title,
-    text: req.body.text
-  };
-
-  fs.readFile("./db/db.json", "utf8", (err, data) => {
-    if (err) throw err;
-
-    const allNotes = JSON.parse(data);
-
-    allNotes.push(newNote);
-
-    fs.writeFile("./db/db.json", JSON.stringify(allNotes, null, 2), err => {
-      if (err) throw err;
-      res.send(db);
-      console.log("Note created!")
-    });
-  });
+app.post("/api/notes", function (req, res) {
+  var newNote = req.body;
+  newNote.id = uuidv4();
+  db.push(newNote);
+  res.json(newNote);
+console.log ('note saved!')
+  refreshDB();
 });
 
 // deletes notes
     
+}
+
+function refreshDB() {
+  fs.writeFile("./db/db.json", JSON.stringify(db), function (err) {
+    if (err) throw err;
+    return true;
+  });
 }
