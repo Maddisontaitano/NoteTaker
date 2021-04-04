@@ -1,5 +1,4 @@
 //dependencies
-var NotesData = require("../data/NotesData");
 
 
 module.exports = function(app) {
@@ -14,17 +13,35 @@ module.exports = function(app) {
        res.json(path.join(__dirname, "public/index.html"));
     });
 
-// posts the new note
-    app.post("/notes", function(req, res) {
-        let newNote=req.body;
-        NotesData.push(newNote);
-        updateDB();
-        return console.log("Added new note." + newNote)
+    app.get("/api/", function (req, res) {
+      res.json(index);
     });
 
-// deletes notes
-    router.delete("/notes/:id", function (req, res){
-        NotesData.splice(req.params.id, 1)
-        updatedbfile();
+// posts the new note
+app.post("/api/notes", function(req, res) {
+
+  let noteId = uuid();
+  let newNote = {
+    id: noteId,
+    title: req.body.title,
+    text: req.body.text
+  };
+
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) throw err;
+
+    const allNotes = JSON.parse(data);
+
+    allNotes.push(newNote);
+
+    fs.writeFile("./db/db.json", JSON.stringify(allNotes, null, 2), err => {
+      if (err) throw err;
+      res.send(db);
+      console.log("Note created!")
     });
-  }
+  });
+});
+
+// deletes notes
+    
+}
