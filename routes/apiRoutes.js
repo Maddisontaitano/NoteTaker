@@ -17,6 +17,8 @@ module.exports = function(app) {
       res.json(index);
     });
 
+    app.use(express.static("public"));
+
 // posts the new note
 app.post("/api/notes", function(req, res) {
 
